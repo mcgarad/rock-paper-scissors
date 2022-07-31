@@ -74,45 +74,61 @@ function playRound(playerSelection, computerSelection) {
     return [result, resultMessage, playerSelectionCased];
 }
 
-//Plays the game in 5 rounds and reports best of 5
-function game() {
-    //initiates score of 0-to-0
-    let compScore = 0;
-    let playerScore = 0;
-    alert('Play a game of "Rock, Paper, Scissors". Best of 5 wins.')
-    //Loops through 5 iterations of game
-    for (let i = 0; i < 5; i++) {
-        //Gets computer's random move
+//Sets new game, resets scores
+function newGame() {
+    compScore = 0;
+    playerScore = 0;
+    cpu.textContent = compScore;
+    player.textContent = playerScore;
+}
+
+//New game button object
+const new_game_btn = document.querySelector("#new_game_btn");
+
+//grabs the 3 move button choices as set of playerChoices
+const playerChoices = document.querySelectorAll('button.choice');
+
+let resultList = [];
+
+let compScore = 0;
+let playerScore = 0;
+
+//grabs the divs and spans for text editing
+const cpu = document.querySelector('#cpuScore');
+const player = document.querySelector('#playScore');
+const message = document.querySelector('#messageDiv');
+
+//resets scores and message
+new_game_btn.addEventListener('click', () => {
+    newGame();
+    message.textContent = "New game started.";
+});
+
+//listener for each button
+playerChoices.forEach((button) => {
+    button.addEventListener('click', () => {
+        //defines computer move
         let computerSelection = computerPlay();
-        //Prompts player for their choice
-        let playerSelection = prompt('Choose "Rock", "Paper", or "Scissors".');
-        //Compares choices and reports result in array
-        let resultList = playRound(playerSelection, computerSelection);
-        //Adjusts score based on results
+        //compares result of player choice and computer choice
+        resultList = playRound(button.id, computerSelection);
+        //edits score variables
         if (resultList[0] === "win") {
             playerScore += 1;
         } else if (resultList[0] === "loss") {
             compScore += 1;
-        //Backs up counter by 1 in case where an invalid input was given
-        } else if (resultList[0] === "none") {
-            i -= 1;
         }
-        //Prints results from round to console
-        console.log(`Computer selection: ${computerSelection}`);
-        console.log(`Player selection: ${resultList[2]}`);
-        console.log(resultList[1]);
-        console.log(`Score: ${playerScore} to ${compScore}`)
-        console.log("")
-    }
-    //Prints result of best of 5
-    console.log("")
-    if (compScore == playerScore) {
-        console.log("You tied.");
-    } else if (compScore > playerScore) {
-        console.log("You lose. Better luck next time!");
-    } else if (compScore < playerScore) {
-        console.log("You win!! Have a cookie.")
-    }
-}
-
+        //updates scores on page & message displayed
+        cpu.textContent = compScore;
+        player.textContent = playerScore;
+        message.textContent = resultList[1];
+        //calls match at first to 5 and resets game
+        if (compScore == 5) {
+            message.textContent = `You lose: ${playerScore} to ${compScore}. Better luck next time!`;
+            newGame();
+        } else if (playerScore == 5) {
+            message.textContent = `You win: ${playerScore} to ${compScore}. Have a cookie!!`;
+            newGame();
+        };
+    });
+});
 
